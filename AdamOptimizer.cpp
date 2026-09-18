@@ -12,7 +12,7 @@ AdamOptimizer::AdamOptimizer(std::vector<double>& params, double learning_rate, 
 void AdamOptimizer::step(const std::vector<double>& grads) {
     t++;
     for (size_t i = 0; i < params.size(); i++) {
-        // Apply weight decay
+        // Apply L2 regularization
         double grad = grads[i] + weight_decay * params[i];
         // Update biased first moment estimate
         m[i] = beta1 * m[i] + (1 - beta1) * grad;
@@ -22,7 +22,7 @@ void AdamOptimizer::step(const std::vector<double>& grads) {
         double m_hat = m[i] / (1 - pow(beta1, t));
         double v_hat_value = v[i] / (1 - pow(beta2, t));
         if (amsgrad) {
-            // update the maximum of V manually
+            // add a lower cap to v_t (AMSGrad)
             if (v_hat[i] < v[i]) {
                 v_hat[i] = v[i];
             }
